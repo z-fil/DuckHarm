@@ -51,7 +51,7 @@ let f = 0;
 //Loop di gioco
 function run() {
   running = true;
-  if (millis() - t >= 1000 / fps -17) {
+  if (millis() - t >= 1000 / fps - 4) {
     t = millis();
     tick();
     render();
@@ -335,8 +335,11 @@ class Crosshair {
     this.xSum += handX;
     this.ySum += handY;
     if (frame % this.avgNum == 0) {
-      this.updatePosition(this.xSum / this.avgNum, this.ySum / this.avgNum);
-      //this.updatePosition(mouseX, mouseY);
+      if (!errorOccurred) {
+        this.updatePosition(this.xSum / this.avgNum, this.ySum / this.avgNum);
+      } else {
+        this.updatePosition(mouseX, mouseY);
+      }
       this.xSum = 0;
       this.ySum = 0;
     }
@@ -554,7 +557,8 @@ let startButton;
 let trainFlag = 0;
 let seq = 0;
 
-let calibrationTimeout = 1000;
+// Speed of each calibration step
+let calibrationTimeout = 100;
 let times = 0;
 let speed;
 let inc = 0.10;
@@ -563,6 +567,7 @@ let sY = 0;
 
 let handX;
 let handY;
+let errorOccurred = false
 
 
 function setupCalibration() {
@@ -609,6 +614,7 @@ function setupCalibration() {
 function captureFrames() {
   sX = sliderX.value();
   sY = sliderY.value();
+  time_ms = 200
   if (times % 2 == 0) {
     setTimeout(function() {regressorX.addImage(sliderX.value())}, 500);
   }
@@ -687,14 +693,20 @@ function drawCalibration() {
     } else if (trainFlag == 2) {
       trainFlag++;
       regressorY.train(whileTraining);
+      
     } else if (trainFlag == 4) {
       trainFlag++;
+      
       //Run
       regressorX.predict(gotResultsX);
       regressorY.predict(gotResultsY);
       calibrationOver = true;
       setupGame();
-    } else {
+    } else if (trainFlag == 1) {
+      errorOccurred = true
+      print("An error occurred with calibration. Some Tensorflow function probably did not work! You will still be able to play with the mouse");
+      calibrationOver = true;
+      setupGame();
     }
   }
 }
