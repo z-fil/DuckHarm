@@ -4,6 +4,8 @@
 Play the popular shooting game, but with a twist: you need to use your arm to aim.
 The game needs access to your webcam to see where your hand is.
 
+The game is directly playable on this [P5js page](https://editor.p5js.org/Filippo_Z/sketches/Dlo34ln7Z)
+
 ## 🕹 Functionalities
 - Train: carefully go through the initial calibration to teach the program how to follow your movements
 - Aim: move your arm to try to shoot the duck
